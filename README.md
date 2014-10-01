@@ -16,3 +16,10 @@ percentY = 1 - percentY;
 
 x = percentX * width;
 y = percentY * height;
+
+
+location.hash.substr(1)
+
+location.hash = val
+
+window.addEventListener('hashchange',function(){});
