@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>JS Bin</title>
+</head>
+<body>
+  <input id="Rval" type="range" min="-100" max="100" step="1" value="50" ></input>
+  <input id="Rsval" type="range" min="-100" max="100" step="1" value="30" ></input>
+<input id="Oval" type="range" min="-100" max="100" step="1" value="15" ></input>
+  <canvas id="canvas" width="800" height="800"></canvas>
+  <script>
+    (function(){
+  draw();
+}())
+
+function draw() {
+  var canvas = document.getElementById('canvas');
+  var ctx = canvas.getContext('2d');
+  var RR = parseInt(document.getElementById('Rval').value);
+  var RRs = parseInt(document.getElementById('Rsval').value);
+  var OO = parseInt(document.getElementById('Oval').value);
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.save();
+  ctx.strokeStyle = "#9CFF00";
+  ctx.translate(canvas.width/2,canvas.height/2);
+  drawSpirograph(ctx,RR,RRs,OO);
+  ctx.restore();
+}
+
+function drawSpirograph(ctx,R,r,O){
+  var x1 = R-O;
+  var y1 = 0;
+  var i  = 1;
+  var b  = 360;
+  ctx.beginPath();
+  ctx.moveTo(x1,y1);
+  do {
+    if (i>200000) break;
+    var x2 = (R+r)*Math.cos(i*Math.PI/b) - (r+O)*Math.cos(((R+r)/r)*(i*Math.PI/b));
+    var y2 = (R+r)*Math.sin(i*Math.PI/b) - (r+O)*Math.sin(((R+r)/r)*(i*Math.PI/b));
+    ctx.lineTo(x2,y2);
+    x1 = x2;
+    y1 = y2;
+    i++;
+  } while (x2 != R-O && y2 != 0 );
+  ctx.stroke();
+}
+
+document.getElementById('Rval').addEventListener('change',draw, false);
+document.getElementById('Rsval').addEventListener('change',draw, false);
+document.getElementById('Oval').addEventListener('change',draw, false);
+  </script>
+</body>
+</html>
