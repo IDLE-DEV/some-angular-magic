@@ -2,24 +2,42 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>JS Bin</title>
+  <title>It's something!</title>
 </head>
 <body>
-  <input id="Rval" type="range" min="-100" max="100" step="1" value="50" ></input>
-  <input id="Rsval" type="range" min="-100" max="100" step="1" value="30" ></input>
-<input id="Oval" type="range" min="-100" max="100" step="1" value="15" ></input>
   <canvas id="canvas" width="800" height="800"></canvas>
   <script>
-    (function(){
-  draw();
-}())
+    var vR = 50;//-100;
+var vRs = 15;//-100;
+var vO = 10;//-100;
+startAnimation();
 
-function draw() {
+function startAnimation(){
+  setInterval(render, 200);
+}
+
+function render(){
+  if (vR + 1 == 100) {
+    if (vRs + 1 == 100) {
+      if (vO + 1 == 100) {
+        vO=0;
+      } else {
+        vO++;
+      };
+      vRs=0;
+    } else {
+      vRs++;
+    };
+    vR=0;
+  } else {
+    vR++;
+  };
+  draw(vR,vRs,vO);
+}
+
+function draw(RR,RRs,OO) {
   var canvas = document.getElementById('canvas');
   var ctx = canvas.getContext('2d');
-  var RR = parseInt(document.getElementById('Rval').value);
-  var RRs = parseInt(document.getElementById('Rsval').value);
-  var OO = parseInt(document.getElementById('Oval').value);
   ctx.fillRect(0,0,canvas.width,canvas.height);
   ctx.save();
   ctx.strokeStyle = "#9CFF00";
@@ -46,10 +64,6 @@ function drawSpirograph(ctx,R,r,O){
   } while (x2 != R-O && y2 != 0 );
   ctx.stroke();
 }
-
-document.getElementById('Rval').addEventListener('change',draw, false);
-document.getElementById('Rsval').addEventListener('change',draw, false);
-document.getElementById('Oval').addEventListener('change',draw, false);
   </script>
 </body>
 </html>
