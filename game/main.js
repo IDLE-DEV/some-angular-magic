@@ -1,5 +1,8 @@
 var WIDTH = 512;
 var HEIGHT = 480;
+var TILE_SIZE = 32;
+
+var tick = 0;
 
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
@@ -56,8 +59,8 @@ function sprite (options) {
 
 var hero = {
     speed: 128, // movement in pixels per second
-    x: 32,
-    y: 32,
+    x: TILE_SIZE,
+    y: TILE_SIZE,
     sprite: sprite({
         context: ctx,
         width: 128,
@@ -70,7 +73,8 @@ var hero = {
 };
 
 var monster = {
-    speed: 64,
+    speed: 256,
+    direction: 0,
     x: 0,
     y: 0,
     sprite: sprite({
@@ -102,49 +106,113 @@ function init() {
     spawnMob();
 }
 
+function canMove(tmpX, tmpY, modX, modY) {
+    var res = true;
+    if (tmpX + modX > WIDTH - TILE_SIZE || tmpX + modX < 0) res = false;
+    if (tmpY + modY > HEIGHT - TILE_SIZE || tmpY + modY < 0) res = false;
+    return res;
+}
+
 function update(modifier) {
     var updated = true;
     if (38 in keysDown) { // Player holding up
-        hero.y -= hero.speed * modifier;
-        updated = false;
+        if (canMove(hero.x, hero.y, 0, -hero.speed * modifier)) {
+            hero.y -= hero.speed * modifier;
+            updated = false;
+        }
     }
     if (40 in keysDown) { // Player holding down
-        hero.y += hero.speed * modifier;
-        updated = false;
+        if (canMove(hero.x, hero.y, 0, hero.speed * modifier)) {
+            hero.y += hero.speed * modifier;
+            updated = false;
+        }
     }
     if (37 in keysDown) { // Player holding left
-        hero.x -= hero.speed * modifier;
-        updated = false;
+        if (canMove(hero.x, hero.y, -hero.speed * modifier, 0)) {
+            hero.x -= hero.speed * modifier;
+            updated = false;
+        }
     }
     if (39 in keysDown) { // Player holding right
-        hero.x += hero.speed * modifier;
-        updated = false;
+        if (canMove(hero.x, hero.y, hero.speed * modifier, 0)) {
+            hero.x += hero.speed * modifier;
+            updated = false;
+        }
     }
     if (!updated)    hero.sprite.update();
-    
-    var r = Math.floor(Math.random() * 4);
-    switch(r) {
+    if (tick % 20 == 0) {
+        monster.direction = Math.floor(Math.random() * 8);
+    }
+    switch(monster.direction) {
         case 0:
-            monster.y -= monster.speed * modifier;
+            if (canMove(monster.x, monster.y, 0, -monster.speed * modifier)) {
+                monster.y -= monster.speed * modifier;
+            } else {
+                monster.direction = Math.floor(Math.random() * 8);
+            }
             break;
         case 1:
-            monster.y += monster.speed * modifier;
+            if (canMove(monster.x, monster.y, monster.speed * modifier, -monster.speed * modifier)) {
+                monster.x += monster.speed * modifier;
+                monster.y -= monster.speed * modifier;
+            } else {
+                monster.direction = Math.floor(Math.random() * 8);
+            }
             break;
         case 2:
-            monster.x -= monster.speed * modifier;
+            if (canMove(monster.x, monster.y, monster.speed * modifier, 0)) {
+                monster.x += monster.speed * modifier;
+            } else {
+                monster.direction = Math.floor(Math.random() * 8);
+            }
             break;
         case 3:
-            monster.x += monster.speed * modifier;
+            if (canMove(monster.x, monster.y, monster.speed * modifier, monster.speed * modifier)) {
+                monster.x += monster.speed * modifier;
+                monster.y += monster.speed * modifier;
+            } else {
+                monster.direction = Math.floor(Math.random() * 8);
+            }
+            break;
+        case 4:
+            if (canMove(monster.x, monster.y, 0, monster.speed * modifier)) {
+                monster.y += monster.speed * modifier;
+            } else {
+                monster.direction = Math.floor(Math.random() * 8);
+            }
+            break;
+        case 5:
+            if (canMove(monster.x, monster.y, -monster.speed * modifier, monster.speed * modifier)) {
+                monster.x -= monster.speed * modifier;
+                monster.y += monster.speed * modifier;
+            } else {
+                monster.direction = Math.floor(Math.random() * 8);
+            }
+            break;
+        case 6:
+            if (canMove(monster.x, monster.y, -monster.speed * modifier, 0)) {
+                monster.x -= monster.speed * modifier;
+            } else {
+                monster.direction = Math.floor(Math.random() * 8);
+            }
+            break;
+        case 7:
+            if (canMove(monster.x, monster.y, -monster.speed * modifier, -monster.speed * modifier)) {
+                monster.x -= monster.speed * modifier;
+                monster.y -= monster.speed * modifier;
+            } else {
+                monster.direction = Math.floor(Math.random() * 8);
+            }
             break;
         default:
             r = 0;
     }
     monster.sprite.update();
     // Are they touching?
-    if (hero.x <= (monster.x + 32) && 
-        monster.x <= (hero.x + 32) &&
-        hero.y <= (monster.y + 32) &&
-        monster.y <= (hero.y + 32)
+    if (hero.x <= (monster.x + TILE_SIZE) && 
+        monster.x <= (hero.x + TILE_SIZE) &&
+        hero.y <= (monster.y + TILE_SIZE) &&
+        monster.y <= (hero.y + TILE_SIZE)
     ) {
         ++score;
         spawnMob();
@@ -152,8 +220,8 @@ function update(modifier) {
 }
 
 function spawnMob() {
-    monster.x = 32 + (Math.random() * (WIDTH - 64));
-    monster.y = 32 + (Math.random() * (HEIGHT - 64));
+    monster.x = TILE_SIZE + (Math.random() * (WIDTH - TILE_SIZE * 2));
+    monster.y = TILE_SIZE + (Math.random() * (HEIGHT - TILE_SIZE * 2));
 }
 
 function clear() {
@@ -163,19 +231,7 @@ function clear() {
 
 var render = function () {
     clear();
-//     if (bgReady) {
-//         ctx.drawImage(bgImage, 0, 0);
-//     }
 
-//     if (heroReady) {
-//         ctx.drawImage(heroImage, hero.x, hero.y);
-//     }
-
-//     if (monsterReady) {
-//         ctx.drawImage(monsterImage, monster.x, monster.y);
-//     }
-
-    // Score
     ctx.save();
     ctx.translate(hero.x, hero.y);
     hero.sprite.render();
@@ -190,14 +246,15 @@ var render = function () {
     ctx.font = "14px Courier New";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
-    ctx.strokeText("Score: " + score, 16, HEIGHT - 32);
+    ctx.strokeText("Score: " + score, TILE_SIZE / 2, HEIGHT - TILE_SIZE);
     ctx.strokeStyle = "rgb(0, 0, 0)";
 };
 
 var main = function () {
     var now = Date.now();
     var delta = now - then;
-
+    if (tick > 1000000000) r = 0;
+    tick++;
     update(delta / 1000);
     render();
     then = now;
