@@ -5,13 +5,13 @@ var context = canvas.getContext('2d');
 var center = { x: 300, y: 300 };
 var radius = 200;
 var rotateAngle = 0;
-var tick = 0;
-var invert = 1;
+var tick = 60;
+var invert = -1;
 
 function draw() {
   //There are smarter ways to increment time, but this is for demonstration purposes
-  tick ++;
-  rotateAngle = (rotateAngle + invert * (2 * Math.PI) / 360) % (2 * Math.PI / 5);
+//  tick ++;
+
 
   context.clearRect(0, 0, canvas.width, canvas.height);
   context.strokeStyle = 'black';
@@ -75,11 +75,19 @@ function draw() {
 //  context.arcTo(150, 20, 150, 70, 50);  // Create an arc
 //  context.lineTo(150, 120);             // Continue with vertical line
 //  context.stroke();                     // Draw it
-  //Request once a new animation frame is available to call this function again
-  if (tick == 60) {
-    invert *= -1;
-    tick = 0;
+  rotateAngle = (rotateAngle + invert * (2 * Math.PI) / 360) % (2 * Math.PI / 5);
+  if (tick > 0) {
+    tick --;
+    requestAnimationFrame( draw );
   }
-  requestAnimationFrame( draw );
 }
+canvas.addEventListener('click', function(){
+  tick = 60;
+  invert = invert * -1;
+  rotateAngle = invert == 1?0:(2 * Math.PI / 6);
+  draw();
+  //rotateAngle = 2 * Math.PI / 5;
+}, false);
+
+tick = 0;
 draw();
