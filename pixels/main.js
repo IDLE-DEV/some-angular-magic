@@ -2,32 +2,84 @@
 var canvas = document.getElementById('screen');
 var context = canvas.getContext('2d');
 
-var counter = 0;
-var rectWidth = 40;
-var rectHeight = 40;
-var xMovement;
-//Place rectangle in the middle of the screen
-var y = ( canvas.height / 2 ) - ( rectHeight / 2 );
-context.fillStyle = '#91C0FF';
+var center = { x: 300, y: 300 };
+var radius = 200;
+var rotateAngle = 0;
+var tick = 0;
+var invert = 1;
+
 function draw() {
   //There are smarter ways to increment time, but this is for demonstration purposes
-  counter++;
+  tick ++;
+  rotateAngle = (rotateAngle + invert * (2 * Math.PI) / 360) % (2 * Math.PI / 5);
 
-  //Cool math below. More explanation in the text following the code.
-  xMovement = Math.sin(counter / 25) * canvas.width * 0.4 + canvas.width / 2 - rectWidth / 2;
-
-  //Clear the previous drawing results
   context.clearRect(0, 0, canvas.width, canvas.height);
-
+  context.strokeStyle = 'black';
   //Actually draw on the canvas
-  context.fillRect(
-    xMovement,
-    y,
-    rectWidth,
-    rectHeight
-  );
+  context.beginPath();
 
+  context.arc(center.x, center.y, radius, 0, 2 * Math.PI, false);
+
+  context.stroke();
+  context.closePath();
+
+  context.strokeStyle = 'red';
+  //Actually draw on the canvas
+  context.beginPath();
+
+  context.arc(center.x + radius * Math.cos(2 * Math.PI / 5 * 0), center.y + radius * Math.sin(2 * Math.PI / 5 * 0), radius, 2 * Math.PI / 5 * 2.5 + rotateAngle, 2 * Math.PI / 5 * (3 + 1/3) + rotateAngle, false);
+
+  context.stroke();
+  context.closePath();
+
+  context.strokeStyle = 'blue';
+  //Actually draw on the canvas
+  context.beginPath();
+
+  context.arc(center.x + radius * Math.cos(2 * Math.PI / 5 * 1), center.y + radius * Math.sin(2 * Math.PI / 5 * 1), radius, 2 * Math.PI / 5 * 3.5 + rotateAngle, 2 * Math.PI / 5 * (4 + 1/3) + rotateAngle, false);
+
+  context.stroke();
+  context.closePath();
+
+  context.strokeStyle = 'green';
+  //Actually draw on the canvas
+  context.beginPath();
+
+  context.arc(center.x + radius * Math.cos(2 * Math.PI / 5 * 2), center.y + radius * Math.sin(2 * Math.PI / 5 * 2), radius, 2 * Math.PI / 5 * 4.5 + rotateAngle, 2 * Math.PI / 5 * (0 + 1/3) + rotateAngle, false);
+
+  context.stroke();
+  context.closePath();
+
+  context.strokeStyle = 'yellow';
+  //Actually draw on the canvas
+  context.beginPath();
+
+  context.arc(center.x + radius * Math.cos(2 * Math.PI / 5 * 3), center.y + radius * Math.sin(2 * Math.PI / 5 * 3), radius, 2 * Math.PI / 5 * 0.5 + rotateAngle, 2 * Math.PI / 5 * (1 + 1/3) + rotateAngle, false);
+
+  context.stroke();
+  context.closePath();
+
+  context.strokeStyle = 'orange';
+  //Actually draw on the canvas
+  context.beginPath();
+
+  context.arc(center.x + radius * Math.cos(2 * Math.PI / 5 * 4), center.y + radius * Math.sin(2 * Math.PI / 5 * 4), radius, 2 * Math.PI / 5 * 1.5 + rotateAngle, 2 * Math.PI / 5 * (2 + 1/3) + rotateAngle, false);
+
+  context.stroke();
+  context.closePath();
+
+  context.strokeRect(10,10,10,10);
+//  context.beginPath();
+//  context.moveTo(20, 20);               // Create a starting point
+//  context.lineTo(100, 20);              // Create a horizontal line
+//  context.arcTo(150, 20, 150, 70, 50);  // Create an arc
+//  context.lineTo(150, 120);             // Continue with vertical line
+//  context.stroke();                     // Draw it
   //Request once a new animation frame is available to call this function again
+  if (tick == 60) {
+    invert *= -1;
+    tick = 0;
+  }
   requestAnimationFrame( draw );
 }
 draw();
