@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html ng-app="app">
+  <head>
+    <meta charset="utf-8">
+    <title>AngularJS Rocks!</title>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular.min.js"></script>
+    <script>
+      var app = angular.module('app', []);
+      app.controller('NameCtrl', function ($scope){
+        $scope.name = 'UserName';
+        $scope.names = ['Uno', 'Dos', 'Tres', 'Cuatro'];
+        $scope.addName = function() {
+          $scope.names.push($scope.enteredName);
+          $scope.enteredName = '';
+        };
+      });
+    </script>
+  </head>
+  <body ng-controller="NameCtrl">
+    Name:<input ng-model="name" type="text" placeholder="%userName%" />
+    Hello {{name}}
+    <ol>
+      <li ng-repeat="n in names">{{n}}</li>
+    </ol>
+    <form ng-submit='addName()'>
+      <input type="text" ng-model="enteredName"/>
+      <input type="submit" value="Add"/>
+    </form>
+  </body>
+</html>
